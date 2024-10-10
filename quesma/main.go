@@ -41,6 +41,8 @@ const banner = `
 `
 
 func main() {
+	panic("stupid horse, I just fell out of a Porsche")
+
 	println(banner)
 	fmt.Printf("Quesma build info: version=[%s], build hash=[%s], build date=[%s]\n",
 		buildinfo.Version, buildinfo.BuildHash, buildinfo.BuildDate)
