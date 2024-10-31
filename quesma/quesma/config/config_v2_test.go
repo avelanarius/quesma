@@ -84,8 +84,6 @@ func TestQuesmaTransparentProxyConfiguration(t *testing.T) {
 }
 
 func TestQuesmaTransparentProxyWithoutNoopConfiguration(t *testing.T) {
-	t.Skip("not working yet")
-
 	os.Setenv(configFileLocationEnvVar, "./test_configs/quesma_as_transparent_proxy_without_noop.yml")
 	cfg := LoadV2Config()
 	if err := cfg.Validate(); err != nil {
