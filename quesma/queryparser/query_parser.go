@@ -121,6 +121,20 @@ func buildAlternativeSelectCommand(selectCommand *model.SelectCommand) *model.Se
 		}
 	}
 
+	var orderByColumnName string
+
+	if len(selectCommand.OrderBy) != 1 {
+		return nil
+	}
+	if orderByColumn, ok := selectCommand.OrderBy[0].Expr.(model.ColumnRef); ok {
+		orderByColumnName = orderByColumn.ColumnName
+		if selectCommand.OrderBy[0].Direction != model.DescOrder { // TODO: relax
+			return nil
+		}
+	} else {
+		return nil
+	}
+
 	var upperBound *int64
 
 	visitor := model.NewBaseVisitor()
@@ -130,7 +144,7 @@ func buildAlternativeSelectCommand(selectCommand *model.SelectCommand) *model.Se
 			e.Right.Accept(b)
 			return e
 		}
-		if e.Left.(model.ColumnRef).ColumnName != "timestamp" {
+		if e.Left.(model.ColumnRef).ColumnName != orderByColumnName {
 			e.Left.Accept(b)
 			e.Right.Accept(b)
 			return e
@@ -153,19 +167,6 @@ func buildAlternativeSelectCommand(selectCommand *model.SelectCommand) *model.Se
 	if selectCommand.GroupBy != nil {
 		return nil
 	}
-	if len(selectCommand.OrderBy) != 1 {
-		return nil
-	}
-	if orderByColumn, ok := selectCommand.OrderBy[0].Expr.(model.ColumnRef); ok {
-		if orderByColumn.ColumnName != "timestamp" {
-			return nil
-		}
-		if selectCommand.OrderBy[0].Direction != model.DescOrder { // TODO: relax
-			return nil
-		}
-	} else {
-		return nil
-	}
 	if selectCommand.Limit == 0 {
 		return nil
 	}
@@ -179,7 +180,7 @@ func buildAlternativeSelectCommand(selectCommand *model.SelectCommand) *model.Se
 		return nil
 	}
 	alternativeSelectCommand := *selectCommand
-	alternativeSelectCommand.WhereClause = model.NewInfixExpr(model.NewInfixExpr(model.NewColumnRef("timestamp"), ">=", model.NewFunction("fromUnixTimestamp64Milli", model.NewLiteral(*upperBound-timeRangeOptimization))), "AND", selectCommand.WhereClause)
+	alternativeSelectCommand.WhereClause = model.NewInfixExpr(model.NewInfixExpr(model.NewColumnRef(orderByColumnName), ">=", model.NewFunction("fromUnixTimestamp64Milli", model.NewLiteral(*upperBound-timeRangeOptimization))), "AND", selectCommand.WhereClause)
 	return &alternativeSelectCommand
 }
 
