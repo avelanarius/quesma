@@ -87,9 +87,10 @@ jobs:
           sleep 2  # Give tcpdump time to flush buffers
 
       - name: Upload network trace
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: network-trace-${{ matrix.try }}
           path: ci/it/network_trace.pcap
-          retention-days: 5
+          retention-days: 1
 
