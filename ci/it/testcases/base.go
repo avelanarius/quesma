@@ -104,6 +104,14 @@ func (tc *IntegrationTestcaseBase) getKibanaEndpoint() string {
 			} else {
 				fmt.Printf("%s container network settings:\n%s\n", c.name, output)
 			}
+
+			ips, _ := (*c.container).ContainerIPs(ctx)
+			ports, _ := (*c.container).Ports(ctx)
+			inspect, _ := (*c.container).Inspect(ctx)
+
+			fmt.Printf("%s container IPs: %v\n", c.name, ips)
+			fmt.Printf("%s container ports: %v\n", c.name, ports)
+			fmt.Printf("%s container inspect: %v\n", c.name, inspect)
 		}
 	}
 
