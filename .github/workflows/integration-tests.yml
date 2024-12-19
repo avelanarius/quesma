@@ -76,7 +76,7 @@ jobs:
         working-directory: ci/it
         run: |
           # Start tcpdump in background
-          sudo tcpdump -i any -w network_trace.pcap -W 5 -C 100 &
+          sudo tcpdump -i any -w /tmp/network_trace.pcap -W 5 -C 100 &
           TCPDUMP_PID=$!
           
           # Run the tests
@@ -91,6 +91,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: network-trace-${{ matrix.try }}
-          path: ci/it/network_trace.pcap*
+          path: /tmp/network_trace.pcap*
           retention-days: 1
 
