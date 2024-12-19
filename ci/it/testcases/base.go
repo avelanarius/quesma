@@ -42,12 +42,22 @@ func (tc *IntegrationTestcaseBase) Cleanup(ctx context.Context, t *testing.T) {
 	}
 }
 
+func (tc *IntegrationTestcaseBase) getKibanaEndpoint() string {
+	ctx := context.Background()
+	q := *tc.Containers.Kibana
+	p, err1 := q.MappedPort(ctx, "5601/tcp")
+	h, err2 := q.Host(ctx)
+	fmt.Printf("Kibana host: %s, port: %s, err1: %v, err2: %v\n", h, p.Port(), err1, err2)
+	return fmt.Sprintf("http://%s:%s", h, p.Port())
+}
+
 func (tc *IntegrationTestcaseBase) getQuesmaEndpoint() string {
 	ctx := context.Background()
 	q := *tc.Containers.Quesma
 	p, err1 := q.MappedPort(ctx, "8080/tcp")
 	h, err2 := q.Host(ctx)
 	fmt.Printf("Quesma host: %s, port: %s, err1: %v, err2: %v\n", h, p.Port(), err1, err2)
+	tc.getKibanaEndpoint()
 	return fmt.Sprintf("http://%s:%s", h, p.Port())
 }
 
@@ -57,6 +67,7 @@ func (tc *IntegrationTestcaseBase) getElasticsearchEndpoint() string {
 	p, err1 := q.MappedPort(ctx, "9200/tcp")
 	h, err2 := q.Host(ctx)
 	fmt.Printf("Elasticsearch host: %s, port: %s, err1: %v, err2: %v\n", h, p.Port(), err1, err2)
+	tc.getKibanaEndpoint()
 	return fmt.Sprintf("http://%s:%s", h, p.Port())
 }
 
