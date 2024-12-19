@@ -9,8 +9,11 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/ClickHouse/clickhouse-go/v2"
+	"github.com/testcontainers/testcontainers-go"
 	"io"
 	"net/http"
+	"os/exec"
+	"strings"
 	"testing"
 	"time"
 )
@@ -48,7 +51,7 @@ func (tc *IntegrationTestcaseBase) getKibanaEndpoint() string {
 	p, err1 := q.MappedPort(ctx, "5601/tcp")
 	h, err2 := q.Host(ctx)
 	fmt.Printf("Kibana host: %s, port: %s, err1: %v, err2: %v\n", h, p.Port(), err1, err2)
-	
+
 	// Print Docker container info for debugging
 	cmd := exec.Command("docker", "ps", "-a", "--format", "{{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}")
 	output, err := cmd.CombinedOutput()
@@ -65,12 +68,12 @@ func (tc *IntegrationTestcaseBase) getKibanaEndpoint() string {
 		fmt.Printf("Error listing docker networks: %v\n", err)
 	} else {
 		fmt.Printf("Docker networks:\n%s\n", output)
-		
+
 		// Inspect each network
 		networks := strings.Split(strings.TrimSpace(string(output)), "\n")[1:] // Skip header row
 		for _, network := range networks {
 			networkID := strings.Fields(network)[0]
-			cmd = exec.Command("docker", "network", "inspect", networkID) 
+			cmd = exec.Command("docker", "network", "inspect", networkID)
 			inspectOutput, err := cmd.CombinedOutput()
 			if err != nil {
 				fmt.Printf("Error inspecting network %s: %v\n", networkID, err)
@@ -86,19 +89,14 @@ func (tc *IntegrationTestcaseBase) getKibanaEndpoint() string {
 		container *testcontainers.Container
 	}{
 		{"Kibana", tc.Containers.Kibana},
-		{"Quesma", tc.Containers.Quesma}, 
+		{"Quesma", tc.Containers.Quesma},
 		{"Elasticsearch", tc.Containers.Elasticsearch},
 		{"ClickHouse", tc.Containers.ClickHouse},
 	}
 
 	for _, c := range containers {
 		if c.container != nil {
-			containerID, err := (*c.container).ID()
-			if err != nil {
-				fmt.Printf("Error getting container ID for %s: %v\n", c.name, err)
-				continue
-			}
-
+			containerID := (*c.container).GetContainerID()
 			cmd = exec.Command("docker", "inspect", containerID)
 			output, err = cmd.CombinedOutput()
 			if err != nil {
@@ -108,7 +106,7 @@ func (tc *IntegrationTestcaseBase) getKibanaEndpoint() string {
 			}
 		}
 	}
-	
+
 	return fmt.Sprintf("http://%s:%s", h, p.Port())
 }
 
