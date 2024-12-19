@@ -1,12 +1,12 @@
 module quesma.com/its
 
-go 1.21.6
+go 1.23.2
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.20.0
 	github.com/docker/docker v27.1.1+incompatible
 	github.com/stretchr/testify v1.9.0
-	github.com/testcontainers/testcontainers-go v0.33.0
+	github.com/testcontainers/testcontainers-go v0.34.1-0.20241219123639-ea4feeaa4085
 )
 
 require (
@@ -19,7 +19,7 @@ require (
 	github.com/containerd/containerd v1.7.18 // indirect
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/containerd/platforms v0.2.1 // indirect
-	github.com/cpuguy83/dockercfg v0.3.1 // indirect
+	github.com/cpuguy83/dockercfg v0.3.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
