@@ -29,6 +29,7 @@ type TestCase interface {
 type IntegrationTestcaseBase struct {
 	ConfigTemplate string
 	Containers     *Containers
+	alreadyPrinted bool
 }
 
 func (tc *IntegrationTestcaseBase) SetupContainers(ctx context.Context) error {
@@ -45,12 +46,13 @@ func (tc *IntegrationTestcaseBase) Cleanup(ctx context.Context, t *testing.T) {
 	}
 }
 
-func (tc *IntegrationTestcaseBase) getKibanaEndpoint() string {
+func (tc *IntegrationTestcaseBase) maybePrint() {
+	if tc.alreadyPrinted {
+		return
+	}
+	tc.alreadyPrinted = true
+
 	ctx := context.Background()
-	q := *tc.Containers.Kibana
-	p, err1 := q.MappedPort(ctx, "5601/tcp")
-	h, err2 := q.Host(ctx)
-	fmt.Printf("Kibana host: %s, port: %s, err1: %v, err2: %v\n", h, p.Port(), err1, err2)
 
 	// Print Docker container info for debugging
 	cmd := exec.Command("docker", "ps", "-a", "--format", "{{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}")
@@ -114,11 +116,21 @@ func (tc *IntegrationTestcaseBase) getKibanaEndpoint() string {
 			fmt.Printf("%s container inspect: %v\n", c.name, inspect)
 		}
 	}
+}
+
+func (tc *IntegrationTestcaseBase) getKibanaEndpoint() string {
+	tc.maybePrint()
+	ctx := context.Background()
+	q := *tc.Containers.Kibana
+	p, err1 := q.MappedPort(ctx, "5601/tcp")
+	h, err2 := q.Host(ctx)
+	fmt.Printf("Kibana host: %s, port: %s, err1: %v, err2: %v\n", h, p.Port(), err1, err2)
 
 	return fmt.Sprintf("http://%s:%s", h, p.Port())
 }
 
 func (tc *IntegrationTestcaseBase) getQuesmaEndpoint() string {
+	tc.maybePrint()
 	ctx := context.Background()
 	q := *tc.Containers.Quesma
 	p, err1 := q.MappedPort(ctx, "8080/tcp")
@@ -129,6 +141,7 @@ func (tc *IntegrationTestcaseBase) getQuesmaEndpoint() string {
 }
 
 func (tc *IntegrationTestcaseBase) getElasticsearchEndpoint() string {
+	tc.maybePrint()
 	ctx := context.Background()
 	q := *tc.Containers.Elasticsearch
 	p, err1 := q.MappedPort(ctx, "9200/tcp")
@@ -139,6 +152,7 @@ func (tc *IntegrationTestcaseBase) getElasticsearchEndpoint() string {
 }
 
 func (tc *IntegrationTestcaseBase) getClickHouseClient() (*sql.DB, error) {
+	tc.maybePrint()
 	ctx := context.Background()
 	q := *tc.Containers.ClickHouse
 	p, err1 := q.MappedPort(ctx, "9000/tcp")
