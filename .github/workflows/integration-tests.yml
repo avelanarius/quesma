@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [build-quesma-docker-image]
     strategy:
+      fail-fast: false
       matrix:
         try: [ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 ]
     steps:
