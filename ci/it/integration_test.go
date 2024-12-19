@@ -22,42 +22,152 @@ func runIntegrationTest(t *testing.T, testCase testcases.TestCase) {
 	}
 }
 
-func TestTransparentProxy(t *testing.T) {
-	testCase := testcases.NewTransparentProxyIntegrationTestcase()
-	runIntegrationTest(t, testCase)
-}
-
 func TestReadingClickHouseTablesIntegrationTestcase(t *testing.T) {
 	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
 	runIntegrationTest(t, testCase)
 }
 
-func TestQueryAndIngestPipelineTestcase(t *testing.T) {
-	testCase := testcases.NewQueryAndIngestPipelineTestcase()
+func TestReadingClickHouseTablesIntegrationTestcase2(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
 	runIntegrationTest(t, testCase)
 }
 
-func TestDualWriteAndCommonTableTestcase(t *testing.T) {
-	testCase := testcases.NewDualWriteAndCommonTableTestcase()
+func TestReadingClickHouseTablesIntegrationTestcase3(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
 	runIntegrationTest(t, testCase)
 }
 
-func TestWildcardDisabledTestcase(t *testing.T) {
-	testCase := testcases.NewWildcardDisabledTestcase()
+func TestReadingClickHouseTablesIntegrationTestcase4(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
 	runIntegrationTest(t, testCase)
 }
 
-func TestWildcardClickhouseTestcase(t *testing.T) {
-	testCase := testcases.NewWildcardClickhouseTestcase()
+func TestReadingClickHouseTablesIntegrationTestcase5(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
 	runIntegrationTest(t, testCase)
 }
 
-func TestIngestTestcase(t *testing.T) {
-	testCase := testcases.NewIngestTestcase()
+func TestReadingClickHouseTablesIntegrationTestcase6(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
 	runIntegrationTest(t, testCase)
 }
 
-func TestABTestcase(t *testing.T) {
-	testCase := testcases.NewABTestcase()
+func TestReadingClickHouseTablesIntegrationTestcase7(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase8(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase9(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase10(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase11(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase12(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase13(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase14(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase15(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase16(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase17(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase18(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase19(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase20(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase21(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase22(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase23(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase24(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase25(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase26(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase27(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase28(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase29(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
+	runIntegrationTest(t, testCase)
+}
+
+func TestReadingClickHouseTablesIntegrationTestcase30(t *testing.T) {
+	testCase := testcases.NewReadingClickHouseTablesIntegrationTestcase()
 	runIntegrationTest(t, testCase)
 }

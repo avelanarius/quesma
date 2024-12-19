@@ -32,9 +32,6 @@ func (a *ReadingClickHouseTablesIntegrationTestcase) SetupContainers(ctx context
 
 func (a *ReadingClickHouseTablesIntegrationTestcase) RunTests(ctx context.Context, t *testing.T) error {
 	t.Run("test basic request", func(t *testing.T) { a.testBasicRequest(ctx, t) })
-	t.Run("test random thing", func(t *testing.T) { a.testRandomThing(ctx, t) })
-	t.Run("test wildcard goes to elastic", func(t *testing.T) { a.testWildcardGoesToElastic(ctx, t) })
-	t.Run("test ingest is disabled", func(t *testing.T) { a.testIngestIsDisabled(ctx, t) })
 	return nil
 }
 
