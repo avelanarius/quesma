@@ -47,6 +47,7 @@ func (tc *IntegrationTestcaseBase) getQuesmaEndpoint() string {
 	q := *tc.Containers.Quesma
 	p, _ := q.MappedPort(ctx, "8080/tcp")
 	h, _ := q.Host(ctx)
+	fmt.Printf("Quesma host: %s, port: %s\n", h, p.Port())
 	return fmt.Sprintf("http://%s:%s", h, p.Port())
 }
 
@@ -55,6 +56,7 @@ func (tc *IntegrationTestcaseBase) getElasticsearchEndpoint() string {
 	q := *tc.Containers.Elasticsearch
 	p, _ := q.MappedPort(ctx, "9200/tcp")
 	h, _ := q.Host(ctx)
+	fmt.Printf("Elasticsearch host: %s, port: %s\n", h, p.Port())
 	return fmt.Sprintf("http://%s:%s", h, p.Port())
 }
 
@@ -63,6 +65,7 @@ func (tc *IntegrationTestcaseBase) getClickHouseClient() (*sql.DB, error) {
 	q := *tc.Containers.ClickHouse
 	p, _ := q.MappedPort(ctx, "9000/tcp")
 	h, _ := q.Host(ctx)
+	fmt.Printf("ClickHouse host: %s, port: %s\n", h, p.Port())
 	options := clickhouse.Options{
 		Addr: []string{fmt.Sprintf("%s:%s", h, p.Port())},
 		TLS:  nil,
