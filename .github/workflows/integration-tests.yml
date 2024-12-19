@@ -69,8 +69,27 @@ jobs:
             exit 1
           fi
 
-      - name: Run integration tests
-        working-directory: ci/it
-        run: go test -v
+      - name: Install tcpdump
+        run: sudo apt-get update && sudo apt-get install -y tcpdump
 
+      - name: Run integration tests with tcpdump
+        working-directory: ci/it
+        run: |
+          # Start tcpdump in background
+          sudo tcpdump -i any -w network_trace.pcap &
+          TCPDUMP_PID=$!
+          
+          # Run the tests
+          go test -v
+          
+          # After tests complete, stop tcpdump
+          sudo kill $TCPDUMP_PID
+          sleep 2  # Give tcpdump time to flush buffers
+
+      - name: Upload network trace
+        uses: actions/upload-artifact@v4
+        with:
+          name: network-trace-${{ matrix.try }}
+          path: ci/it/network_trace.pcap
+          retention-days: 5
 
