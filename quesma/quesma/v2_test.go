@@ -40,7 +40,7 @@ func emitRequests(stop chan os.Signal, t *testing.T, testData []struct {
 }
 
 func Test_backendConnectorValidation(t *testing.T) {
-	var tcpProcessor quesma_api.Processor = processors.NewPostgresToMySqlProcessor()
+	var tcpProcessor quesma_api.Processor = processors.NewPostgresToDuckDBProcessor()
 	var postgressPipeline quesma_api.PipelineBuilder = quesma_api.NewPipeline()
 	postgressPipeline.AddProcessor(tcpProcessor)
 	var quesmaBuilder quesma_api.QuesmaBuilder = quesma_api.NewQuesma(quesma_api.EmptyDependencies())

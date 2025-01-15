@@ -73,3 +73,7 @@ func (t *TCPListener) Stop(ctx context.Context) error {
 	}
 	return nil
 }
+
+func (t *TCPListener) InstanceName() string {
+	return "TCP Listener"
+}
