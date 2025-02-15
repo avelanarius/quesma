@@ -37,3 +37,13 @@ func TestSimpleSelect(t *testing.T) {
 	assert.Equal(t, "Token.Name", tokens[6].Type.Name)
 	assert.Equal(t, "tabela", tokens[6].RawValue)
 }
+
+func FuzzLex(f *testing.F) {
+	// TODO: add more cases
+	f.Add("SELECT * FROM tabela")
+	f.Add("SELECT * FROM tabela WHERE id = 1")
+
+	f.Fuzz(func(t *testing.T, input string) {
+		_ = core.Lex(input, SqlparseRules)
+	})
+}

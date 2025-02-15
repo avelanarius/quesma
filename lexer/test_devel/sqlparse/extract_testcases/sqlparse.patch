@@ -6,7 +6,7 @@ index 8f88d17..92f04b5 100644
              raise TypeError("Expected text or file-like object, got {!r}".
                              format(type(text)))
 
-+        with open("/mount/extracted-testcases.txt", "a") as file:
++        with open("/output/extracted-testcases.txt", "a") as file:
 +            file.write(text + "\n<end_of_query/>\n")
 +
          iterable = enumerate(text)
