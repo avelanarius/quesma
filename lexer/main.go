@@ -8,6 +8,8 @@ import (
 
 func main() {
 	for _, rule := range dialect_sqlparse.SQL_REGEX {
-		fmt.Println(rule.(*core.RegexRule).DeleteMe)
+		if rule, isRegex := rule.(*core.RegexRule); isRegex {
+			fmt.Println(rule.DeleteMe)
+		}
 	}
 }

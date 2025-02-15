@@ -20,6 +20,13 @@ func MakeToken(rawValue string, tokenType *TokenType) Token {
 	}
 }
 
+func (t Token) String() string {
+	if t.Type == nil {
+		return "<unknown>(" + t.RawValue + ")"
+	}
+	return t.Type.Name + "(" + t.RawValue + ")"
+}
+
 type TokenType struct {
 	Name        string
 	Description string

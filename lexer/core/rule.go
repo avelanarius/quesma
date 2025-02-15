@@ -49,7 +49,7 @@ func NewStringRule(pattern string, resultingTokenType *TokenType) *StringRule {
 	return &StringRule{pattern: strings.ToUpper(pattern), resultingTokenType: resultingTokenType}
 }
 
-func (s StringRule) Match(input string) (Token, bool) {
+func (s *StringRule) Match(input string) (Token, bool) {
 	// FIXME: improve performance, avoiding ToUpper on entire input
 	if !strings.HasPrefix(strings.ToUpper(input), s.pattern) {
 		return EmptyToken, false
@@ -58,7 +58,7 @@ func (s StringRule) Match(input string) (Token, bool) {
 	return MakeToken(input[0:len(s.pattern)], s.resultingTokenType), true
 }
 
-func (s StringRule) Name() string {
+func (s *StringRule) Name() string {
 	return "StringRule"
 }
 
