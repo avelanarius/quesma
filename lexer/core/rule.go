@@ -18,10 +18,11 @@ type Rule interface {
 type RegexRule struct {
 	regex              *regexp.Regexp
 	resultingTokenType *TokenType
+	DeleteMe           string
 }
 
-func NewRegexRule(pattern string, resultingTokenType *TokenType) *RegexRule {
-	return &RegexRule{regex: regexp.MustCompile(`^(?i)` + pattern), resultingTokenType: resultingTokenType}
+func NewRegexRule(regex string, resultingTokenType *TokenType) *RegexRule {
+	return &RegexRule{regex: regexp.MustCompile(`^(?i)` + regex), resultingTokenType: resultingTokenType, DeleteMe: regex}
 }
 
 func (r *RegexRule) Match(input string) (Token, bool) {
