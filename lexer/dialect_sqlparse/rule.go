@@ -52,7 +52,8 @@ var SQL_REGEX = []core.Rule{
 	//    inner contents
 	// 4. \1
 	//    matching quote start (e.g. $$ or $MYQUOTE$, must be identical to the first part)
-	NewNegativeLookbehindRule(`(?:[\w\"\$])`, NewDollarQuoteRule(`(\$(?:[_A-ZÀ-Ü]\w*)?\$)[\s\S]*?(\$(?:[_A-ZÀ-Ü]\w*)?\$)`, &LiteralTokenType)),
+	NewNegativeLookbehindRule(`(?:[\w\"\$])`,
+		NewDollarQuoteRule(`(\$(?:[_A-ZÀ-Ü]\w*)?\$)`, `[\s\S]*?`, &LiteralTokenType)),
 
 	core.NewRegexRule(`\?`, &PlaceholderNameTokenType),
 	core.NewRegexRule(`%(\(\w+\))?s`, &PlaceholderNameTokenType),
@@ -92,14 +93,12 @@ var SQL_REGEX = []core.Rule{
 	core.NewRegexRule(`-?\d+(\.\d+)?E-?\d+`, &FloatNumberTokenType),
 	// Original regex:
 	// core.NewRegexRule(`(?![_A-ZÀ-Ü])-?(\d+(\.\d*)|\.\d+)(?![_A-ZÀ-Ü])`, &FloatNumberTokenType),
-	// I'm not sure what those negative lookaheads are supposed to do, the first one is not necessary.
-	// For now, I'm removing those lookaheads.
-	core.NewRegexRule(`-?(\d+(\.\d*)|\.\d+)`, &FloatNumberTokenType),
+	// I think that the first negative lookahead is not necessary. For now, removing it.
+	NewNegativeLookaheadRule(`-?(\d+(\.\d*)|\.\d+)`, `[_A-ZÀ-Ü]`, &FloatNumberTokenType),
 
 	// Original regex: core.NewRegexRule(`(?![_A-ZÀ-Ü])-?\d+(?![_A-ZÀ-Ü])`, &IntegerNumberTokenType),
-	// I'm not sure what those negative lookaheads are supposed to do, the first one is not necessary.
-	// For now, I'm removing those lookaheads.
-	core.NewRegexRule(`-?\d+`, &IntegerNumberTokenType),
+	// I think that the first negative lookahead is not necessary. For now, removing it.
+	NewNegativeLookaheadRule(`-?\d+`, `[_A-ZÀ-Ü]`, &IntegerNumberTokenType),
 
 	core.NewRegexRule(`'(''|\\'|[^'])*'`, &SingleStringTokenType),
 	// not a real string literal in ANSI SQL:
@@ -172,31 +171,6 @@ func (p *ProcessAsKeywordRule) Name() string {
 	return "ProcessAsKeywordRule"
 }
 
-// Golang's regexp package doesn't support negative lookbehind, so we implement it manually
-// Equivalent of Python's (?<!...) regex
-type NegativeLookbehindRule struct {
-	regex     *regexp.Regexp
-	innerRule core.Rule
-}
-
-func NewNegativeLookbehindRule(regex string, innerRule core.Rule) *NegativeLookbehindRule {
-	return &NegativeLookbehindRule{regex: regexp.MustCompile(`(?i)` + regex + "$"), innerRule: innerRule}
-}
-
-func (n *NegativeLookbehindRule) Match(input string, position int) (core.Token, bool) {
-	// If (negative) lookbehind regex matches, the rule doesn't fire
-	match := n.regex.FindString(input[:position])
-	if len(match) != 0 {
-		return core.EmptyToken, false
-	}
-
-	return n.innerRule.Match(input, position)
-}
-
-func (n *NegativeLookbehindRule) Name() string {
-	return "NegativeLookbehindRule"
-}
-
 // Golang's regexp package doesn't support positive lookbehind, so we implement it manually
 // Equivalent of Python's (?<=...) regex
 type PositiveLookbehindRule struct {
@@ -220,6 +194,31 @@ func (p *PositiveLookbehindRule) Match(input string, position int) (core.Token, 
 
 func (p *PositiveLookbehindRule) Name() string {
 	return "PositiveLookbehindRule"
+}
+
+// Golang's regexp package doesn't support negative lookbehind, so we implement it manually
+// Equivalent of Python's (?<!...) regex
+type NegativeLookbehindRule struct {
+	regex     *regexp.Regexp
+	innerRule core.Rule
+}
+
+func NewNegativeLookbehindRule(regex string, innerRule core.Rule) *NegativeLookbehindRule {
+	return &NegativeLookbehindRule{regex: regexp.MustCompile(`(?i)` + regex + "$"), innerRule: innerRule}
+}
+
+func (n *NegativeLookbehindRule) Match(input string, position int) (core.Token, bool) {
+	// If (negative) lookbehind regex matches, the rule doesn't fire
+	match := n.regex.FindString(input[:position])
+	if len(match) != 0 {
+		return core.EmptyToken, false
+	}
+
+	return n.innerRule.Match(input, position)
+}
+
+func (n *NegativeLookbehindRule) Name() string {
+	return "NegativeLookbehindRule"
 }
 
 // Golang's regexp package doesn't support positive lookahead, so we implement it manually
@@ -251,27 +250,69 @@ func (r *PositiveLookaheadRule) Name() string {
 	return "PositiveLookaheadRule"
 }
 
-type DollarQuoteRule struct {
+// Golang's regexp package doesn't support negative lookahead, so we implement it manually
+// by transforming the regex in the following way:
+//
+//	regex1(?!regex2) -> (regex1)(regex2)?
+//
+// and making sure that the last capturing group did not match.
+//
+// Equivalent of Python's (?!...) regex
+type NegativeLookaheadRule struct {
 	regex              *regexp.Regexp
 	resultingTokenType *core.TokenType
 }
 
-func NewDollarQuoteRule(regex string, resultingTokenType *core.TokenType) *DollarQuoteRule {
-	return &DollarQuoteRule{regex: regexp.MustCompile(`^(?i)` + regex), resultingTokenType: resultingTokenType}
+func NewNegativeLookaheadRule(regex string, negativeLookaheadRegex string, resultingTokenType *core.TokenType) *NegativeLookaheadRule {
+	return &NegativeLookaheadRule{regex: regexp.MustCompile(`^(?i)(` + regex + `)(` + negativeLookaheadRegex + `)?`), resultingTokenType: resultingTokenType}
+}
+
+func (r *NegativeLookaheadRule) Match(input string, position int) (core.Token, bool) {
+	matches := r.regex.FindStringSubmatch(input[position:])
+	if len(matches) < 3 || len(matches[1]) == 0 {
+		return core.EmptyToken, false
+	}
+	// Negative lookahead matched, so the rule doesn't fire
+	if len(matches[len(matches)-1]) != 0 {
+		return core.EmptyToken, false
+	}
+	return core.MakeToken(position, matches[1], r.resultingTokenType), true
+}
+
+func (r *NegativeLookaheadRule) Name() string {
+	return "NegativeLookaheadRule"
+}
+
+type DollarQuoteRule struct {
+	quoteStartRegex    *regexp.Regexp
+	quoteInnerRegex    string
+	resultingTokenType *core.TokenType
+}
+
+func NewDollarQuoteRule(quoteStartRegex string, quoteInnerRegex string, resultingTokenType *core.TokenType) *DollarQuoteRule {
+	return &DollarQuoteRule{quoteStartRegex: regexp.MustCompile(`^(?i)` + quoteStartRegex),
+		quoteInnerRegex: quoteInnerRegex, resultingTokenType: resultingTokenType}
 }
 
 func (r *DollarQuoteRule) Match(input string, position int) (core.Token, bool) {
-	matches := r.regex.FindStringSubmatch(input[position:])
-	if len(matches) != 3 || len(matches[0]) == 0 {
-		return core.EmptyToken, false
-	}
-	// Check if the two dollar quotes are the same, e.g. $MYQUOTE$inner$MYQUOTE$
-	// and not $MYQUOTE$inner$OTHER$
-	if matches[1] != matches[2] {
+	// First try to match dollar quote start (e.g. $MYQUOTE$)
+	match := r.quoteStartRegex.FindString(input[position:])
+	if len(match) == 0 {
 		return core.EmptyToken, false
 	}
 
-	return core.MakeToken(position, matches[0], r.resultingTokenType), true
+	// We found $MYQUOTE$, now let's find $MYQUOTE$quoteInnerRegex$MYQUOTE$
+	match = regexp.QuoteMeta(match)
+	fullRegex, err := regexp.Compile(`^(?i)` + match + r.quoteInnerRegex + match)
+	if err != nil {
+		return core.EmptyToken, false
+	}
+	fullMatch := fullRegex.FindString(input[position:])
+	if len(fullMatch) == 0 {
+		return core.EmptyToken, false
+	}
+
+	return core.MakeToken(position, fullMatch, r.resultingTokenType), true
 }
 
 func (r *DollarQuoteRule) Name() string {

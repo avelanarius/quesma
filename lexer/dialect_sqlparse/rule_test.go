@@ -60,8 +60,14 @@ func TestSqlparseTestcases(t *testing.T) {
 			require.Equal(t, len(testcase.expectedTokens), len(tokens))
 
 			for i, expectedToken := range testcase.expectedTokens {
-				assert.Equal(t, expectedToken.tokenType, tokens[i].Type.Name)
-				assert.Equal(t, expectedToken.tokenValue, tokens[i].RawValue)
+				assert.Equalf(t, expectedToken.tokenType, tokens[i].Type.Name, "Token type at position %d", i)
+				assert.Equalf(t, expectedToken.tokenValue, tokens[i].RawValue, "Token value at position %d", i)
+			}
+
+			if t.Failed() {
+				for i, expectedToken := range testcase.expectedTokens {
+					t.Logf("Expected token at position %d: %s(%s). Got: %s(%s)", i, expectedToken.tokenType, expectedToken.tokenValue, tokens[i].Type.Name, tokens[i].RawValue)
+				}
 			}
 		})
 	}

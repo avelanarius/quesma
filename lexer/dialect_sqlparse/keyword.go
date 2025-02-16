@@ -918,5 +918,8 @@ var ALL_KEYWORDS = func() map[string]*core.TokenType {
 	maps.Copy(merged, KEYWORDS_MYSQL)
 	maps.Copy(merged, KEYWORDS_PLPGSQL)
 	maps.Copy(merged, KEYWORDS_HQL)
+	maps.Copy(merged, KEYWORDS_MSACCESS)
+	maps.Copy(merged, KEYWORDS_SNOWFLAKE)
+	maps.Copy(merged, KEYWORDS_BIGQUERY)
 	return merged
 }()
