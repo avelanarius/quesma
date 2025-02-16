@@ -60,6 +60,12 @@ func TestSqlparsedTestcases(t *testing.T) {
 						assert.Equalf(t, testcase.expectedTokens[i].tokenType, tokens[i].Type.Name, "Token type at position %d", i)
 						assert.Equalf(t, testcase.expectedTokens[i].tokenValue, tokens[i].RawValue, "Token value at position %d", i)
 					}
+
+					if t.Failed() {
+						for i := 0; i < commonLength; i++ {
+							t.Logf("Expected token at position %d: %s(%s). Got: %s(%s)", i, testcase.expectedTokens[i].tokenType, testcase.expectedTokens[i].tokenValue, tokens[i].Type.Name, tokens[i].RawValue)
+						}
+					}
 				})
 			}
 		})

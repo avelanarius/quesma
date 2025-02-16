@@ -451,12 +451,6 @@ NewlineSegment
 <end_of_token/>
 CommentSegment
 /* Several valid queries where there is whitespace surrounding the ANSI
-<end_of_token/>
-NewlineSegment
-
-
-<end_of_token/>
-CommentSegment
 cast operator (::) */
 <end_of_token/>
 NewlineSegment
@@ -2331,19 +2325,7 @@ NewlineSegment
 <end_of_token/>
 CommentSegment
 /*
-<end_of_token/>
-NewlineSegment
-
-
-<end_of_token/>
-CommentSegment
 )
-<end_of_token/>
-NewlineSegment
-
-
-<end_of_token/>
-CommentSegment
 */
 <end_of_token/>
 NewlineSegment
@@ -2488,16 +2470,7 @@ NewlineSegment
 <end_of_token/>
 CommentSegment
 /* This is a
-<end_of_token/>
-NewlineSegment
-
-
-<end_of_token/>
-WhitespaceSegment
-    
-<end_of_token/>
-CommentSegment
-multiple line comment */
+    multiple line comment */
 <end_of_token/>
 EndOfFile
 
@@ -20306,22 +20279,7 @@ NewlineSegment
 <end_of_token/>
 CommentSegment
 /*
-<end_of_token/>
-NewlineSegment
-
-
-<end_of_token/>
-WhitespaceSegment
-    
-<end_of_token/>
-CommentSegment
-select
-<end_of_token/>
-NewlineSegment
-
-
-<end_of_token/>
-CommentSegment
+    select
 */
 <end_of_token/>
 NewlineSegment

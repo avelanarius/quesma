@@ -7,3 +7,4 @@ sqlparse/extract_testcases/extract_testcases.sh
 sqlfluff/extract_testcases/extract_testcases.sh
 
 sqlparse/parse_testcases/parse_testcases.sh
+sqlfluff/parse_testcases/parse_testcases.sh

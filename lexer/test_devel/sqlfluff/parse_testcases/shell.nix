@@ -15,6 +15,9 @@ pkgs.mkShellNoCC {
             rev = "6666db9ed97f45161fb318f901392d9a214808d2";
             hash = "sha256-hb/tbpD0Etf6Wvs4dUfjYvBBbfLquZx2DoN9X0NqwfM=";
           };
+          patches = [
+            ./sqlfluff.patch
+          ];
           doCheck = false;
           doInstallCheck = false;
         })

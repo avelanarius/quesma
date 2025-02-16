@@ -35,7 +35,9 @@ var ansiRules = []core.Rule{
 	dialect_sqlparse.NewNegativeLookaheadRule(`\d+`, `_A-ZÀ-Ü`, &LiteralTokenType),
 
 	core.NewRegexRule(`!?~~?\*?`, &ComparisonOperatorTokenType),
-	core.NewRegexRule(`\r\n|\n`, &NewlineTokenType),
+	// MODIFICATION: original regex:
+	// core.NewRegexRule(`\r\n|\n`, &NewlineTokenType),
+	core.NewRegexRule(`(\r\n|\r|\n)`, &NewlineTokenType),
 
 	core.NewStringRule(`::`, &CodeTokenType),
 	core.NewStringRule(`=`, &CodeTokenType),

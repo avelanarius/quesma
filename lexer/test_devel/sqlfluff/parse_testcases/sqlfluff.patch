@@ -1,0 +1,16 @@
+diff --git a/src/sqlfluff/dialects/dialect_ansi.py b/src/sqlfluff/dialects/dialect_ansi.py
+index 594ae5483..d61cc6e91 100644
+--- a/src/sqlfluff/dialects/dialect_ansi.py
++++ b/src/sqlfluff/dialects/dialect_ansi.py
+@@ -100,11 +100,6 @@ ansi_dialect.set_lexer_matchers(
+             "block_comment",
+             r"\/\*([^\*]|\*(?!\/))*\*\/",
+             CommentSegment,
+-            subdivider=RegexLexer(
+-                "newline",
+-                r"\r\n|\n",
+-                NewlineSegment,
+-            ),
+             trim_post_subdivide=RegexLexer(
+                 "whitespace",
+                 r"[^\S\r\n]+",
