@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+rm -f /mount/test_devel/sqlparse/extract_testcases/extracted-sqlparse-testcases.txt
+
 cd /
 
 git clone https://github.com/andialbrecht/sqlparse.git

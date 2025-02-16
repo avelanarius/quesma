@@ -91,12 +91,12 @@ var SQL_REGEX = []core.Rule{
 	// MODIFICATION: Original regex:
 	// core.NewRegexRule(`(?![_A-ZÀ-Ü])-?(\d+(\.\d*)|\.\d+)(?![_A-ZÀ-Ü])`, &FloatNumberTokenType),
 	// I think that the first negative lookahead is not necessary. For now, removing it.
-	NewNegativeLookaheadRule(`-?(\d+(\.\d*)|\.\d+)`, `[_A-ZÀ-Ü]`, &FloatNumberTokenType),
+	NewNegativeLookaheadRule(`-?(\d+(\.\d*)|\.\d+)`, `_A-ZÀ-Ü`, &FloatNumberTokenType),
 
 	// MODIFICATION: Original regex:
 	// core.NewRegexRule(`(?![_A-ZÀ-Ü])-?\d+(?![_A-ZÀ-Ü])`, &IntegerNumberTokenType),
 	// I think that the first negative lookahead is not necessary. For now, removing it.
-	NewNegativeLookaheadRule(`-?\d+`, `[_A-ZÀ-Ü]`, &IntegerNumberTokenType),
+	NewNegativeLookaheadRule(`-?\d+`, `_A-ZÀ-Ü`, &IntegerNumberTokenType),
 
 	core.NewRegexRule(`'(''|\\'|[^'])*'`, &SingleStringTokenType),
 	core.NewRegexRule(`"(""|\\"|[^"])*"`, &SymbolStringTokenType),
@@ -248,9 +248,7 @@ func (r *PositiveLookaheadRule) Name() string {
 // Golang's regexp package doesn't support negative lookahead, so we implement it manually
 // by transforming the regex in the following way:
 //
-//	regex1(?!regex2) -> (regex1)(regex2)?
-//
-// and making sure that the last capturing group did not match.
+//	regex(?![alternatives]) -> (regex)(?:[^alternatives]|$)
 //
 // Equivalent of Python's (?!...) regex
 type NegativeLookaheadRule struct {
@@ -258,17 +256,13 @@ type NegativeLookaheadRule struct {
 	resultingTokenType *core.TokenType
 }
 
-func NewNegativeLookaheadRule(regex string, negativeLookaheadRegex string, resultingTokenType *core.TokenType) *NegativeLookaheadRule {
-	return &NegativeLookaheadRule{regex: regexp.MustCompile(`^(?i)(` + regex + `)(` + negativeLookaheadRegex + `)?`), resultingTokenType: resultingTokenType}
+func NewNegativeLookaheadRule(regex string, alternatives string, resultingTokenType *core.TokenType) *NegativeLookaheadRule {
+	return &NegativeLookaheadRule{regex: regexp.MustCompile(`^(?i)(` + regex + `)(?:[^` + alternatives + `]|$)`), resultingTokenType: resultingTokenType}
 }
 
 func (r *NegativeLookaheadRule) Match(input string, position int) (core.Token, bool) {
 	matches := r.regex.FindStringSubmatch(input[position:])
-	if len(matches) < 3 || len(matches[1]) == 0 {
-		return core.EmptyToken, false
-	}
-	// Negative lookahead matched, so the rule doesn't fire
-	if len(matches[len(matches)-1]) != 0 {
+	if len(matches) < 2 || len(matches[1]) == 0 {
 		return core.EmptyToken, false
 	}
 	return core.MakeToken(position, matches[1], r.resultingTokenType), true

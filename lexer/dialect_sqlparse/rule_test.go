@@ -41,22 +41,31 @@ func TestSimpleSelect(t *testing.T) {
 	assert.Equal(t, "tabela", tokens[6].RawValue)
 }
 
-func TestSqlparseTestcases(t *testing.T) {
-	testcases := loadParsedTestcases("test_files/parsed-sqlparse-testcases.txt")
-	for _, testcase := range testcases {
-		t.Run(testcase.query, func(t *testing.T) {
-			tokens := core.Lex(testcase.query, SqlparseRules)
-			require.Equal(t, len(testcase.expectedTokens), len(tokens))
+func TestSqlparsedTestcases(t *testing.T) {
+	testfiles := []string{
+		"test_files/parsed-sqlparse-testcases.txt",
+		"test_files/parsed-sqlfluff-all-testcases.txt",
+	}
 
-			for i, expectedToken := range testcase.expectedTokens {
-				assert.Equalf(t, expectedToken.tokenType, tokens[i].Type.Name, "Token type at position %d", i)
-				assert.Equalf(t, expectedToken.tokenValue, tokens[i].RawValue, "Token value at position %d", i)
-			}
+	for _, testfile := range testfiles {
+		t.Run(testfile, func(t *testing.T) {
+			testcases := loadParsedTestcases(testfile)
+			for _, testcase := range testcases {
+				t.Run(testcase.query, func(t *testing.T) {
+					tokens := core.Lex(testcase.query, SqlparseRules)
+					require.Equal(t, len(testcase.expectedTokens), len(tokens))
 
-			if t.Failed() {
-				for i, expectedToken := range testcase.expectedTokens {
-					t.Logf("Expected token at position %d: %s(%s). Got: %s(%s)", i, expectedToken.tokenType, expectedToken.tokenValue, tokens[i].Type.Name, tokens[i].RawValue)
-				}
+					for i, expectedToken := range testcase.expectedTokens {
+						assert.Equalf(t, expectedToken.tokenType, tokens[i].Type.Name, "Token type at position %d", i)
+						assert.Equalf(t, expectedToken.tokenValue, tokens[i].RawValue, "Token value at position %d", i)
+					}
+
+					if t.Failed() {
+						for i, expectedToken := range testcase.expectedTokens {
+							t.Logf("Expected token at position %d: %s(%s). Got: %s(%s)", i, expectedToken.tokenType, expectedToken.tokenValue, tokens[i].Type.Name, tokens[i].RawValue)
+						}
+					}
+				})
 			}
 		})
 	}

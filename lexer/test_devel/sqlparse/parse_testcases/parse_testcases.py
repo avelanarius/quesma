@@ -1,12 +1,12 @@
 #!/bin/env python3
 import sqlparse
 
-def main():
-    with open("/mount/test_devel/sqlparse/extract_testcases/extracted-sqlparse-testcases.txt", "rb") as f:
+def run(input, output):
+    with open(input, "rb") as f:
         content = f.read()
     queries = content.split(b"\n<end_of_query/>\n")[:-1]
 
-    output = open("/mount/dialect_sqlparse/test_files/parsed-sqlparse-testcases.txt", "w")
+    output = open(output, "w")
 
     for query in queries:
         query_str = query.decode('utf-8')
@@ -21,9 +21,10 @@ def main():
 
         output.write("\n<end_of_tokens/>\n")
 
-    print("Processed", len(queries), "queries")
+    print(input, ": processed", len(queries), "queries")
 
     output.close()
 
 if __name__ == '__main__':
-    main()
+    run("/mount/test_devel/sqlparse/extract_testcases/extracted-sqlparse-testcases.txt", "/mount/dialect_sqlparse/test_files/parsed-sqlparse-testcases.txt")
+    run("/mount/test_devel/sqlfluff/extract_testcases/extracted-sqlfluff-all-testcases.txt", "/mount/dialect_sqlparse/test_files/parsed-sqlfluff-all-testcases.txt")
