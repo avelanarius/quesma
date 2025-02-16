@@ -63,7 +63,11 @@ func TestSqlparsedTestcases(t *testing.T) {
 
 					if t.Failed() {
 						for i := 0; i < commonLength; i++ {
-							t.Logf("Expected token at position %d: %s(%s). Got: %s(%s)", i, testcase.expectedTokens[i].tokenType, testcase.expectedTokens[i].tokenValue, tokens[i].Type.Name, tokens[i].RawValue)
+							if testcase.expectedTokens[i].tokenType != tokens[i].Type.Name || testcase.expectedTokens[i].tokenValue != tokens[i].RawValue {
+								t.Logf("Mismatch token at position %d: %s(%s). Got: %s(%s)", i, testcase.expectedTokens[i].tokenType, testcase.expectedTokens[i].tokenValue, tokens[i].Type.Name, tokens[i].RawValue)
+							} else {
+								t.Logf("Expected token at position %d: %s(%s). Got: %s(%s)", i, testcase.expectedTokens[i].tokenType, testcase.expectedTokens[i].tokenValue, tokens[i].Type.Name, tokens[i].RawValue)
+							}
 						}
 					}
 				})
