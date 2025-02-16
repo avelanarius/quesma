@@ -42,9 +42,10 @@ func TestSimpleSelect(t *testing.T) {
 }
 
 func FuzzLex(f *testing.F) {
-	// TODO: add more cases
-	f.Add("SELECT * FROM tabela")
-	f.Add("SELECT * FROM tabela WHERE id = 1")
+	testcases := loadParsedTestcases("test_files/parsed-sqlparse-testcases.txt")
+	for _, testcase := range testcases {
+		f.Add(testcase.query)
+	}
 
 	f.Fuzz(func(t *testing.T, input string) {
 		_ = core.Lex(input, SqlparseRules)
@@ -52,7 +53,7 @@ func FuzzLex(f *testing.F) {
 }
 
 func TestSqlparseTestcases(t *testing.T) {
-	testcases := loadParsedTestcases(t, "test_files/parsed-sqlparse-testcases.txt")
+	testcases := loadParsedTestcases("test_files/parsed-sqlparse-testcases.txt")
 	for _, testcase := range testcases {
 		t.Run(testcase.query, func(t *testing.T) {
 			tokens := core.Lex(testcase.query, SqlparseRules)
@@ -76,9 +77,11 @@ type expectedToken struct {
 	tokenValue string
 }
 
-func loadParsedTestcases(t *testing.T, filename string) []parsedTestcase {
+func loadParsedTestcases(filename string) []parsedTestcase {
 	contents, err := os.ReadFile(filename)
-	assert.NoError(t, err)
+	if err != nil {
+		panic(err)
+	}
 
 	testcases := bytes.Split(contents, []byte("\n<end_of_tokens/>\n"))
 	testcases = testcases[:len(testcases)-1]
@@ -86,7 +89,6 @@ func loadParsedTestcases(t *testing.T, filename string) []parsedTestcase {
 	var parsedTestcases []parsedTestcase
 	for _, testcase := range testcases {
 		endOfQuerySplit := bytes.Split(testcase, []byte("\n<end_of_query/>\n"))
-		assert.Equal(t, 2, len(endOfQuerySplit))
 
 		query := string(endOfQuerySplit[0])
 

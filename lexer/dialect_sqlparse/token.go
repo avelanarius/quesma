@@ -88,7 +88,7 @@ var MultilineHintTokenType = core.TokenType{
 }
 
 var NewlineTokenType = core.TokenType{
-	Name:        "Token.Newline",
+	Name:        "Token.Text.Whitespace.Newline",
 	Description: "Newline token",
 }
 
@@ -138,11 +138,11 @@ var FloatNumberTokenType = core.TokenType{
 }
 
 var SingleStringTokenType = core.TokenType{
-	Name:        "Token.String.Single",
+	Name:        "Token.Literal.String.Single",
 	Description: "Single-quoted string token",
 }
 
 var SymbolStringTokenType = core.TokenType{
-	Name:        "Token.String.Symbol",
+	Name:        "Token.Literal.String.Symbol",
 	Description: "Symbol string token",
 }
