@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestSimpleSelect(t *testing.T) {
@@ -53,17 +52,13 @@ func TestSqlparsedTestcases(t *testing.T) {
 			for _, testcase := range testcases {
 				t.Run(testcase.query, func(t *testing.T) {
 					tokens := core.Lex(testcase.query, SqlparseRules)
-					require.Equal(t, len(testcase.expectedTokens), len(tokens))
+					assert.Equal(t, len(testcase.expectedTokens), len(tokens))
 
-					for i, expectedToken := range testcase.expectedTokens {
-						assert.Equalf(t, expectedToken.tokenType, tokens[i].Type.Name, "Token type at position %d", i)
-						assert.Equalf(t, expectedToken.tokenValue, tokens[i].RawValue, "Token value at position %d", i)
-					}
+					commonLength := min(len(testcase.expectedTokens), len(tokens))
 
-					if t.Failed() {
-						for i, expectedToken := range testcase.expectedTokens {
-							t.Logf("Expected token at position %d: %s(%s). Got: %s(%s)", i, expectedToken.tokenType, expectedToken.tokenValue, tokens[i].Type.Name, tokens[i].RawValue)
-						}
+					for i := 0; i < commonLength; i++ {
+						assert.Equalf(t, testcase.expectedTokens[i].tokenType, tokens[i].Type.Name, "Token type at position %d", i)
+						assert.Equalf(t, testcase.expectedTokens[i].tokenValue, tokens[i].RawValue, "Token value at position %d", i)
 					}
 				})
 			}

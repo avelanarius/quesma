@@ -33,4 +33,4 @@ def run(dialect, input, output):
     output.close()
 
 if __name__ == '__main__':
-    run("ansi", "/mount/test_devel/sqlfluff/extract_testcases/extracted-sqlfluff-ansi-testcases.txt", "/mount/parsed.txt")
+    run("ansi", "/mount/test_devel/sqlfluff/extract_testcases/extracted-sqlfluff-ansi-testcases.txt", "/mount/dialects_sqlfluff/test_files/parsed-sqlfluff-ansi-testcases.txt")

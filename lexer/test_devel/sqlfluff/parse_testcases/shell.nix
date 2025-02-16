@@ -7,17 +7,17 @@ pkgs.mkShellNoCC {
   packages = [
     (pkgs.python3.withPackages(python-pkgs: [
       (pkgs.python3Packages.toPythonModule(
-        pkgs.sqlfluff.overrideAttrs {
+        pkgs.sqlfluff.overrideAttrs (oldAttrs: {
           version = "0-unstable-2024-02-16";
           src = pkgs.fetchFromGitHub {
             owner = "sqlfluff";
             repo = "sqlfluff";
-            tag = "6666db9ed97f45161fb318f901392d9a214808d2";
-            hash = "sha256-PQSGB8723y0+cptoLHpXzXfSQFicf5tasbTEf0efA8c=";
+            rev = "6666db9ed97f45161fb318f901392d9a214808d2";
+            hash = "sha256-hb/tbpD0Etf6Wvs4dUfjYvBBbfLquZx2DoN9X0NqwfM=";
           };
           doCheck = false;
           doInstallCheck = false;
-        }
+        })
       ))
     ]))
   ];
