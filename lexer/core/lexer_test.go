@@ -105,7 +105,7 @@ func TestLexNoMatch(t *testing.T) {
 	assert.Equal(t, testKeywordTokenType, tokens[0].Type)
 
 	assert.NotEqual(t, "ING", tokens[1].RawValue)
-	assert.Contains(t, tokens[1].RawValue, "no rule matched input")
+	assert.Contains(t, tokens[1].RawValue, "rule did not match")
 	assert.Equal(t, 4, tokens[1].Position)
 	assert.Equal(t, ErrorTokenType, tokens[1].Type)
 }

@@ -9,20 +9,15 @@ func Lex(input string, rule Rule) []Token {
 	var tokens []Token
 	position := 0
 
-	for len(input) > 0 {
-		token, matched := rule.Match(input)
+	for position < len(input) {
+		token, matched := rule.Match(input, position)
 
 		if matched {
-			token.Position = position
 			tokens = append(tokens, token)
-
-			input = input[len(token.RawValue):]
 			position += len(token.RawValue)
 		} else {
 			// FIXME: don't put the entire input in the error message, only first ~20 or so characters
-			errorToken := MakeToken(fmt.Sprintf("no rule matched input at position %d: '%s'", position, input), ErrorTokenType)
-			errorToken.Position = position
-
+			errorToken := MakeToken(position, fmt.Sprintf("rule did not match input at position %d: '%s'", position, input), ErrorTokenType)
 			tokens = append(tokens, errorToken)
 			break
 		}

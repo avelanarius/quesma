@@ -13,10 +13,11 @@ type Token struct {
 
 var EmptyToken = Token{}
 
-func MakeToken(rawValue string, tokenType *TokenType) Token {
+func MakeToken(position int, rawValue string, tokenType *TokenType) Token {
 	return Token{
 		RawValue: rawValue,
 		Type:     tokenType,
+		Position: position,
 	}
 }
 

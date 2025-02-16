@@ -9,7 +9,7 @@ import (
 )
 
 type Rule interface {
-	Match(input string) (Token, bool)
+	Match(input string, position int) (Token, bool)
 	Name() string
 }
 
@@ -25,13 +25,13 @@ func NewRegexRule(regex string, resultingTokenType *TokenType) *RegexRule {
 	return &RegexRule{regex: regexp.MustCompile(`^(?i)` + regex), resultingTokenType: resultingTokenType, DeleteMe: regex}
 }
 
-func (r *RegexRule) Match(input string) (Token, bool) {
-	match := r.regex.FindString(input)
+func (r *RegexRule) Match(input string, position int) (Token, bool) {
+	match := r.regex.FindString(input[position:])
 	if len(match) == 0 {
 		return EmptyToken, false
 	}
 
-	return MakeToken(match, r.resultingTokenType), true
+	return MakeToken(position, match, r.resultingTokenType), true
 }
 
 func (r *RegexRule) Name() string {
@@ -49,13 +49,13 @@ func NewStringRule(pattern string, resultingTokenType *TokenType) *StringRule {
 	return &StringRule{pattern: strings.ToUpper(pattern), resultingTokenType: resultingTokenType}
 }
 
-func (s *StringRule) Match(input string) (Token, bool) {
+func (s *StringRule) Match(input string, position int) (Token, bool) {
 	// FIXME: improve performance, avoiding ToUpper on entire input
-	if !strings.HasPrefix(strings.ToUpper(input), s.pattern) {
+	if !strings.HasPrefix(strings.ToUpper(input[position:]), s.pattern) {
 		return EmptyToken, false
 	}
 
-	return MakeToken(input[0:len(s.pattern)], s.resultingTokenType), true
+	return MakeToken(position, input[position:position+len(s.pattern)], s.resultingTokenType), true
 }
 
 func (s *StringRule) Name() string {
@@ -70,9 +70,9 @@ func NewRuleList(rules ...Rule) *RuleList {
 	return &RuleList{rules: rules}
 }
 
-func (r RuleList) Match(input string) (Token, bool) {
+func (r RuleList) Match(input string, position int) (Token, bool) {
 	for _, rule := range r.rules {
-		token, matched := rule.Match(input)
+		token, matched := rule.Match(input, position)
 		if matched {
 			return token, true
 		}
