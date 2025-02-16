@@ -8,8 +8,9 @@ def run(input, output):
 
     output = open(output, "w")
 
-    for query in sqlparse.split(content):
-        output.write(query + "\n<end_of_query/>\n")
+    for query in content.split("\n<end_of_query/>\n")[:-1]:
+        for subquery in sqlparse.split(query):
+            output.write(subquery + "\n<end_of_query/>\n")
 
     output.close()
 

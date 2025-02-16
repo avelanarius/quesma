@@ -13,7 +13,12 @@ for dialect_dir in test/fixtures/dialects/*/; do
         dialect=$(basename "$dialect_dir")
         output_file="/mount/test_devel/sqlfluff/extract_testcases/extracted-sqlfluff-${dialect}-testcases.txt"
 
-        cat "${dialect_dir}"*.sql > "$output_file"
+        for sql_file in "${dialect_dir}"*.sql; do
+            if [ -f "$sql_file" ]; then
+                cat "$sql_file" >> "$output_file"
+                printf "\n<end_of_query/>\n" >> "$output_file"
+            fi
+        done
         python3 /mount/test_devel/sqlfluff/extract_testcases/split_testcases.py "$output_file" "$output_file"
         echo "Extracted testcases for dialect ${dialect}, $(wc -l < "$output_file") lines"
     fi
