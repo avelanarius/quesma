@@ -17,7 +17,7 @@ func Lex(input string, rule Rule) []Token {
 			position += len(token.RawValue)
 		} else {
 			// FIXME: don't put the entire input in the error message, only first ~20 or so characters
-			errorToken := MakeToken(position, fmt.Sprintf("rule did not match input at position %d: '%s'", position, input), ErrorTokenType)
+			errorToken := MakeToken(position, fmt.Sprintf("rule did not match input at position %d: '%s'", position, input[position:]), ErrorTokenType)
 			tokens = append(tokens, errorToken)
 			break
 		}

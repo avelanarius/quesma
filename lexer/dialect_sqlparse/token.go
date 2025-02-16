@@ -118,22 +118,22 @@ var LiteralTokenType = core.TokenType{
 }
 
 var CommandTokenType = core.TokenType{
-	Name:        "Token.Command",
+	Name:        "Token.Generic.Command",
 	Description: "Command token",
 }
 
 var IntegerNumberTokenType = core.TokenType{
-	Name:        "Token.Number.Integer",
+	Name:        "Token.Literal.Number.Integer",
 	Description: "Integer number token",
 }
 
 var HexadecimalNumberTokenType = core.TokenType{
-	Name:        "Token.Number.Hexadecimal",
+	Name:        "Token.Literal.Number.Hexadecimal",
 	Description: "Hexadecimal number token",
 }
 
 var FloatNumberTokenType = core.TokenType{
-	Name:        "Token.Number.Float",
+	Name:        "Token.Literal.Number.Float",
 	Description: "Float number token",
 }
 
@@ -145,4 +145,9 @@ var SingleStringTokenType = core.TokenType{
 var SymbolStringTokenType = core.TokenType{
 	Name:        "Token.Literal.String.Symbol",
 	Description: "Symbol string token",
+}
+
+var ErrorTokenType = core.TokenType{
+	Name:        "Token.Error",
+	Description: "Error token. The input at this position did not match any rule, so this character was skipped",
 }
