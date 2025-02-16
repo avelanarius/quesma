@@ -2,11 +2,11 @@
 import sqlparse
 
 def main():
-    with open("/output/extracted-sqlparse-testcases.txt", "rb") as f:
+    with open("/mount/test_devel/sqlparse/extract_testcases/extracted-sqlparse-testcases.txt", "rb") as f:
         content = f.read()
     queries = content.split(b"\n<end_of_query/>\n")[:-1]
 
-    output = open("/output/parsed-sqlparse-testcases.txt", "w")
+    output = open("/mount/dialect_sqlparse/test_files/parsed-sqlparse-testcases.txt", "w")
 
     for query in queries:
         query_str = query.decode('utf-8')
