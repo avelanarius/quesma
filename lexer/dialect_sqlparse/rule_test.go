@@ -69,7 +69,32 @@ func FuzzLex(f *testing.F) {
 	}
 
 	f.Fuzz(func(t *testing.T, input string) {
-		_ = core.Lex(input, SqlparseRules)
+		tokens := core.Lex(input, SqlparseRules)
+
+		// Basic checks:
+
+		totalLength := 0
+		for _, token := range tokens {
+			// Position should never be negative
+			if token.Position < 0 {
+				t.Errorf("Token position is negative: %d", token.Position)
+			}
+
+			// Token raw value should not be empty
+			if len(token.RawValue) == 0 {
+				t.Error("Token has empty raw value")
+			}
+
+			// Position should be within input string bounds
+			if token.Position > len(input) {
+				t.Errorf("Token position %d exceeds input length %d", token.Position, len(input))
+			}
+
+			totalLength += len(token.RawValue)
+		}
+
+		// Tokens should cover the entire input
+		assert.Equal(t, len(input), totalLength)
 	})
 }
 
