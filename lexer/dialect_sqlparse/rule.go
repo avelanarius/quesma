@@ -11,6 +11,7 @@ import (
 
 // Based on https://github.com/andialbrecht/sqlparse/blob/38c065b86ac43f76ffd319747e57096ed78bfa63/sqlparse/keywords.py
 
+// All instances of \w were replaced with [\pL\d_] to support Unicode
 var SQL_REGEX = []core.Rule{
 	core.NewRegexRule(`(--|# )\+.*?(\r\n|\r|\n|$)`, &SingleHintTokenType),
 	core.NewRegexRule(`/\*\+[\s\S]*?\*/`, &MultilineHintTokenType),
@@ -39,30 +40,30 @@ var SQL_REGEX = []core.Rule{
 	// It's commonly used in CREATE FUNCTION statements in PostgreSQL.
 	//
 	// Go's regexp package doesn't support lookbehind and backreferences, so we reimplement the original regex:
-	// core.NewRegexRule(`((?<![\w\"\$])\$(?:[_A-ZÀ-Ü]\w*)?\$)[\s\S]*?\1`, &LiteralTokenType),
+	// core.NewRegexRule(`((?<![\pL\d_\"\$])\$(?:[_A-ZÀ-Ü][\pL\d_]*)?\$)[\s\S]*?\1`, &LiteralTokenType),
 	//
 	// Splitting the original regex into parts:
-	// 1. (?<![\w\"\$])
-	//    Negative Lookbehind: text behind us can't end at [\w\"\$] character
+	// 1. (?<![\pL\d_\"\$])
+	//    Negative Lookbehind: text behind us can't end at [\pL\d_\"\$] character
 	// 2.1. \$
-	// 2.2  (?:[_A-ZÀ-Ü]\w*)?
+	// 2.2  (?:[_A-ZÀ-Ü][\pL\d_]*)?
 	//      potential string (e.g. MYQUOTE in example above)
 	// 2.3. \$
 	// 3. [\s\S]*?
 	//    inner contents
 	// 4. \1
 	//    matching quote start (e.g. $$ or $MYQUOTE$, must be identical to the first part)
-	NewNegativeLookbehindRule(`(?:[\w\"\$])`,
-		NewDollarQuoteRule(`(\$(?:[_A-ZÀ-Ü]\w*)?\$)`, `[\s\S]*?`, &LiteralTokenType)),
+	NewNegativeLookbehindRule(`(?:[\pL\d_\"\$])`,
+		NewDollarQuoteRule(`(\$(?:[_A-ZÀ-Ü][\pL\d_]*)?\$)`, `[\s\S]*?`, &LiteralTokenType)),
 
 	core.NewRegexRule(`\?`, &PlaceholderNameTokenType),
-	core.NewRegexRule(`%(\(\w+\))?s`, &PlaceholderNameTokenType),
+	core.NewRegexRule(`%(\([\pL\d_]+\))?s`, &PlaceholderNameTokenType),
 
 	// Original regex:
-	//core.NewRegexRule(`(?<!\w)[$:?]\w+`, &PlaceholderNameTokenType),
-	NewNegativeLookbehindRule(`\w`, core.NewRegexRule(`[$:?]\w+`, &PlaceholderNameTokenType)),
+	//core.NewRegexRule(`(?<![\pL\d_])[$:?][\pL\d_]+`, &PlaceholderNameTokenType),
+	NewNegativeLookbehindRule(`[\pL\d_]`, core.NewRegexRule(`[$:?][\pL\d_]+`, &PlaceholderNameTokenType)),
 
-	core.NewRegexRule(`\\\w+`, &CommandTokenType),
+	core.NewRegexRule(`\\[\pL\d_]+`, &CommandTokenType),
 
 	// FIXME(andi): VALUES shouldn't be listed here
 	// see https://github.com/andialbrecht/sqlparse/pull/64
@@ -70,24 +71,24 @@ var SQL_REGEX = []core.Rule{
 	// are never functions, see issue183 and issue507
 	core.NewRegexRule(`(CASE|IN|VALUES|USING|FROM|AS)\b`, &KeywordTokenType),
 
-	core.NewRegexRule(`(@|##|#)[A-ZÀ-Ü]\w+`, &NameTokenType),
+	core.NewRegexRule(`(@|##|#)[A-ZÀ-Ü][\pL\d_]+`, &NameTokenType),
 
 	// see issue #39
 	// Spaces around period `schema . name` are valid identifier
 	// TODO: Spaces before period not implemented
 	// Original regex:
-	// core.NewRegexRule(`[A-ZÀ-Ü]\w*(?=\s*\.)`, &NameTokenType), // 'Name'.
-	NewPositiveLookaheadRule(`[A-ZÀ-Ü]\w*`, `\s*\.`, &NameTokenType),
+	// core.NewRegexRule(`[A-ZÀ-Ü][\pL\d_]*(?=\s*\.)`, &NameTokenType), // 'Name'.
+	NewPositiveLookaheadRule(`[A-ZÀ-Ü][\pL\d_]*`, `\s*\.`, &NameTokenType), // 'Name'.
 
 	// FIXME(atronah): never match,
 	// because `re.match` doesn't work with look-behind regexp feature
 	// Original regex:
-	//core.NewRegexRule(`(?<=\.)[A-ZÀ-Ü]\w*`, &NameTokenType), // .'Name'
-	NewPositiveLookbehindRule(`\.`, core.NewRegexRule(`[A-ZÀ-Ü]\w*`, &NameTokenType)),
+	//core.NewRegexRule(`(?<=\.)[A-ZÀ-Ü][\pL\d_]*`, &NameTokenType), // .'Name'
+	NewPositiveLookbehindRule(`\.`, core.NewRegexRule(`[A-ZÀ-Ü][\pL\d_]*`, &NameTokenType)), // .'Name'
 
 	// Original regex:
-	// core.NewRegexRule(`[A-ZÀ-Ü]\w*(?=\()`, &NameTokenType), // side effect: change kw to func
-	NewPositiveLookaheadRule(`[A-ZÀ-Ü]\w*`, `\(`, &NameTokenType),
+	// core.NewRegexRule(`[A-ZÀ-Ü][\pL\d_]*(?=\()`, &NameTokenType), // side effect: change kw to func
+	NewPositiveLookaheadRule(`[A-ZÀ-Ü][\pL\d_]*`, `\(`, &NameTokenType), // side effect: change kw to func
 
 	core.NewRegexRule(`-?0x[\dA-F]+`, &HexadecimalNumberTokenType),
 	core.NewRegexRule(`-?\d+(\.\d+)?E-?\d+`, &FloatNumberTokenType),
@@ -109,8 +110,8 @@ var SQL_REGEX = []core.Rule{
 	// otherwise it's probably an array index
 
 	// Original regex:
-	//core.NewRegexRule(`(?<![\w\])])(\[[^\]\[]+\])`, &NameTokenType),
-	NewNegativeLookbehindRule(`[\w\])]`, core.NewRegexRule(`(\[[^\]\[]+\])`, &NameTokenType)),
+	//core.NewRegexRule(`(?<![\pL\d_\])])(\[[^\]\[]+\])`, &NameTokenType),
+	NewNegativeLookbehindRule(`[\pL\d_\])]`, core.NewRegexRule(`(\[[^\]\[]+\])`, &NameTokenType)),
 
 	core.NewRegexRule(`((LEFT\s+|RIGHT\s+|FULL\s+)?(INNER\s+|OUTER\s+|STRAIGHT\s+)?`+
 		`|(CROSS\s+|NATURAL\s+)?)?JOIN\b`, &KeywordTokenType),
@@ -134,7 +135,7 @@ var SQL_REGEX = []core.Rule{
 	core.NewRegexRule(`(NOT\s+)?(REGEXP)\b`, &ComparisonOperatorTokenType),
 	// Check for keywords, also returns tokens.Name if regex matches
 	// but the match isn't a keyword.
-	NewProcessAsKeywordRule(`\w[$#\w]*`, &NameTokenType, ALL_KEYWORDS),
+	NewProcessAsKeywordRule(`[\pL\d_][$#\pL\d_]*`, &NameTokenType, ALL_KEYWORDS),
 	core.NewRegexRule(`[;:()\[\],\.]`, &PunctuationTokenType),
 	// JSON operators
 	core.NewRegexRule(`(\->>?|#>>?|@>|<@|\?\|?|\?&|\-|#\-)`, &OperatorTokenType),

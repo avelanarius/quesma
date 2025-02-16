@@ -41,17 +41,6 @@ func TestSimpleSelect(t *testing.T) {
 	assert.Equal(t, "tabela", tokens[6].RawValue)
 }
 
-func FuzzLex(f *testing.F) {
-	testcases := loadParsedTestcases("test_files/parsed-sqlparse-testcases.txt")
-	for _, testcase := range testcases {
-		f.Add(testcase.query)
-	}
-
-	f.Fuzz(func(t *testing.T, input string) {
-		_ = core.Lex(input, SqlparseRules)
-	})
-}
-
 func TestSqlparseTestcases(t *testing.T) {
 	testcases := loadParsedTestcases("test_files/parsed-sqlparse-testcases.txt")
 	for _, testcase := range testcases {
@@ -71,6 +60,17 @@ func TestSqlparseTestcases(t *testing.T) {
 			}
 		})
 	}
+}
+
+func FuzzLex(f *testing.F) {
+	testcases := loadParsedTestcases("test_files/parsed-sqlparse-testcases.txt")
+	for _, testcase := range testcases {
+		f.Add(testcase.query)
+	}
+
+	f.Fuzz(func(t *testing.T, input string) {
+		_ = core.Lex(input, SqlparseRules)
+	})
 }
 
 type parsedTestcase struct {
