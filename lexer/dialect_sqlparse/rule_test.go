@@ -98,6 +98,28 @@ func FuzzLex(f *testing.F) {
 	})
 }
 
+func BenchmarkLex(b *testing.B) {
+	testCases := map[string]string{
+		"empty":         "",
+		"small_query":   "SELECT * FROM tabela",
+		"medium_query":  "select * from foo where bar = 1 order by id desc",
+		"subquery":      "select * from (select a, b + c as d from table) sub",
+		"complex_query": "select 'abc' as foo, json_build_object('a', a,'b', b, 'c', c, 'd', d, 'e', e) as col2col3 from my_table",
+		"long_query":    "SELECT t1.column1, t2.column2, t3.column3, SUM(t4.amount) FROM table1 t1 INNER JOIN table2 t2 ON t1.id = t2.id LEFT JOIN table3 t3 ON t2.id = t3.id INNER JOIN table4 t4 ON t3.id = t4.id WHERE t1.date >= '2023-01-01' AND t2.status = 'active' GROUP BY t1.column1, t2.column2, t3.column3 HAVING SUM(t4.amount) > 1000 ORDER BY t1.column1 DESC, t2.column2 ASC LIMIT 100",
+		"invalid_query": "SELECT * FORM tabel WERE x = y",
+		"garbage":       "!@#$%^&* )( asdf123 ;;; ~~~",
+	}
+
+	for name, tc := range testCases {
+		b.Run(name, func(b *testing.B) {
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				core.Lex(tc, SqlparseRules)
+			}
+		})
+	}
+}
+
 type parsedTestcase struct {
 	query          string
 	expectedTokens []expectedToken
