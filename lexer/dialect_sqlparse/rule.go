@@ -174,7 +174,7 @@ type PositiveLookbehindRule struct {
 }
 
 func NewPositiveLookbehindRule(regex string, innerRule core.Rule) *PositiveLookbehindRule {
-	return &PositiveLookbehindRule{regex: regexp.MustCompile(`(?i)` + regex + "$"), innerRule: innerRule}
+	return &PositiveLookbehindRule{regex: regexp.MustCompile(`(?is)` + regex + "$"), innerRule: innerRule}
 }
 
 func (p *PositiveLookbehindRule) Match(input string, position int) (core.Token, bool) {
@@ -199,7 +199,7 @@ type NegativeLookbehindRule struct {
 }
 
 func NewNegativeLookbehindRule(regex string, innerRule core.Rule) *NegativeLookbehindRule {
-	return &NegativeLookbehindRule{regex: regexp.MustCompile(`(?i)` + regex + "$"), innerRule: innerRule}
+	return &NegativeLookbehindRule{regex: regexp.MustCompile(`(?is)` + regex + "$"), innerRule: innerRule}
 }
 
 func (n *NegativeLookbehindRule) Match(input string, position int) (core.Token, bool) {
@@ -230,7 +230,7 @@ type PositiveLookaheadRule struct {
 }
 
 func NewPositiveLookaheadRule(regex string, positiveLookaheadRegex string, resultingTokenType *core.TokenType) *PositiveLookaheadRule {
-	return &PositiveLookaheadRule{regex: regexp.MustCompile(`^(?i)(` + regex + `)(?:` + positiveLookaheadRegex + `)`), resultingTokenType: resultingTokenType}
+	return &PositiveLookaheadRule{regex: regexp.MustCompile(`^(?is)(` + regex + `)(?:` + positiveLookaheadRegex + `)`), resultingTokenType: resultingTokenType}
 }
 
 func (r *PositiveLookaheadRule) Match(input string, position int) (core.Token, bool) {
@@ -257,7 +257,7 @@ type NegativeLookaheadRule struct {
 }
 
 func NewNegativeLookaheadRule(regex string, alternatives string, resultingTokenType *core.TokenType) *NegativeLookaheadRule {
-	return &NegativeLookaheadRule{regex: regexp.MustCompile(`^(?i)(` + regex + `)(?:[^` + alternatives + `]|$)`), resultingTokenType: resultingTokenType}
+	return &NegativeLookaheadRule{regex: regexp.MustCompile(`^(?is)(` + regex + `)(?:[^` + alternatives + `]|$)`), resultingTokenType: resultingTokenType}
 }
 
 func (r *NegativeLookaheadRule) Match(input string, position int) (core.Token, bool) {
@@ -279,7 +279,7 @@ type DollarQuoteRule struct {
 }
 
 func NewDollarQuoteRule(quoteStartRegex string, quoteInnerRegex string, resultingTokenType *core.TokenType) *DollarQuoteRule {
-	return &DollarQuoteRule{quoteStartRegex: regexp.MustCompile(`^(?i)` + quoteStartRegex),
+	return &DollarQuoteRule{quoteStartRegex: regexp.MustCompile(`^(?is)` + quoteStartRegex),
 		quoteInnerRegex: quoteInnerRegex, resultingTokenType: resultingTokenType}
 }
 
@@ -292,7 +292,7 @@ func (r *DollarQuoteRule) Match(input string, position int) (core.Token, bool) {
 
 	// We found $MYQUOTE$, now let's find $MYQUOTE$quoteInnerRegex$MYQUOTE$
 	match = regexp.QuoteMeta(match)
-	fullRegex, err := regexp.Compile(`^(?i)` + match + r.quoteInnerRegex + match)
+	fullRegex, err := regexp.Compile(`^(?is)` + match + r.quoteInnerRegex + match)
 	if err != nil {
 		return core.EmptyToken, false
 	}

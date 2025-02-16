@@ -14,27 +14,36 @@ import (
 // FIXME: code duplication
 
 func TestSqlfluffAnsiTestcases(t *testing.T) {
-	testcases := loadParsedTestcases("../test_files/parsed-sqlfluff-ansi-testcases.txt")
-	for _, testcase := range testcases {
-		t.Run(testcase.query, func(t *testing.T) {
-			tokens := core.Lex(testcase.query, SqlfluffAnsiRules)
-			assert.Equal(t, len(testcase.expectedTokens), len(tokens))
+	testfiles := []string{
+		"../test_files/parsed-sqlfluff-ansi-testcases.txt",
+		"../test_files/parsed-sqlparse-testcases.txt",
+	}
 
-			commonLength := min(len(testcase.expectedTokens), len(tokens))
+	for _, testfile := range testfiles {
+		t.Run(testfile, func(t *testing.T) {
+			testcases := loadParsedTestcases(testfile)
+			for _, testcase := range testcases {
+				t.Run(testcase.query, func(t *testing.T) {
+					tokens := core.Lex(testcase.query, SqlfluffAnsiRules)
+					assert.Equal(t, len(testcase.expectedTokens), len(tokens))
 
-			for i := 0; i < commonLength; i++ {
-				assert.Equalf(t, testcase.expectedTokens[i].tokenType, tokens[i].Type.Name, "Token type at position %d", i)
-				assert.Equalf(t, testcase.expectedTokens[i].tokenValue, tokens[i].RawValue, "Token value at position %d", i)
-			}
+					commonLength := min(len(testcase.expectedTokens), len(tokens))
 
-			if t.Failed() {
-				for i := 0; i < commonLength; i++ {
-					if testcase.expectedTokens[i].tokenType != tokens[i].Type.Name || testcase.expectedTokens[i].tokenValue != tokens[i].RawValue {
-						t.Logf("Mismatch token at position %d: %s(%s). Got: %s(%s)", i, testcase.expectedTokens[i].tokenType, testcase.expectedTokens[i].tokenValue, tokens[i].Type.Name, tokens[i].RawValue)
-					} else {
-						t.Logf("Expected token at position %d: %s(%s). Got: %s(%s)", i, testcase.expectedTokens[i].tokenType, testcase.expectedTokens[i].tokenValue, tokens[i].Type.Name, tokens[i].RawValue)
+					for i := 0; i < commonLength; i++ {
+						assert.Equalf(t, testcase.expectedTokens[i].tokenType, tokens[i].Type.Name, "Token type at position %d", i)
+						assert.Equalf(t, testcase.expectedTokens[i].tokenValue, tokens[i].RawValue, "Token value at position %d", i)
 					}
-				}
+
+					if t.Failed() {
+						for i := 0; i < commonLength; i++ {
+							if testcase.expectedTokens[i].tokenType != tokens[i].Type.Name || testcase.expectedTokens[i].tokenValue != tokens[i].RawValue {
+								t.Logf("Mismatch token at position %d: %s(%s). Got: %s(%s)", i, testcase.expectedTokens[i].tokenType, testcase.expectedTokens[i].tokenValue, tokens[i].Type.Name, tokens[i].RawValue)
+							} else {
+								t.Logf("Expected token at position %d: %s(%s). Got: %s(%s)", i, testcase.expectedTokens[i].tokenType, testcase.expectedTokens[i].tokenValue, tokens[i].Type.Name, tokens[i].RawValue)
+							}
+						}
+					}
+				})
 			}
 		})
 	}

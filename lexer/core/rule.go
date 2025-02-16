@@ -21,7 +21,7 @@ type RegexRule struct {
 }
 
 func NewRegexRule(regex string, resultingTokenType *TokenType) *RegexRule {
-	return &RegexRule{regex: regexp.MustCompile(`^(?i)` + regex), resultingTokenType: resultingTokenType}
+	return &RegexRule{regex: regexp.MustCompile(`^(?is)` + regex), resultingTokenType: resultingTokenType}
 }
 
 func (r *RegexRule) Match(input string, position int) (Token, bool) {
