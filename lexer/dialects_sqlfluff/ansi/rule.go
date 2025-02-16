@@ -30,7 +30,7 @@ var ansiRules = []core.Rule{
 	// MODIFICATION: original regex doesn't compile in golang:
 	// core.NewRegexRule(`(?>\d+\.\d+|\d+\.(?![\.\w])|\.\d+|\d+)(\.?[eE][+-]?\d+)?((?<=\.)|(?=\b))`, &LiteralTokenType),
 	// replacing it with (modified) number rules from dialect_sqlparse:
-	core.NewRegexRule(`\d*(\.\d*)?E[+-]?\d+`, &LiteralTokenType),
+	core.NewRegexRule(`(\d+\.\d*|\d*\.\d+|\d+)E[+-]?\d+`, &LiteralTokenType),
 	dialect_sqlparse.NewNegativeLookaheadRule(`(\d+(\.\d*)|\.\d+)`, `_A-ZÀ-Ü\d`, &LiteralTokenType),
 	dialect_sqlparse.NewNegativeLookaheadRule(`\d+`, `_A-ZÀ-Ü\d`, &LiteralTokenType),
 
