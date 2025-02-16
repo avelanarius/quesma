@@ -4,10 +4,13 @@
 package dialect_sqlparse
 
 import (
+	"bytes"
 	"lexer/core"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSimpleSelect(t *testing.T) {
@@ -46,4 +49,59 @@ func FuzzLex(f *testing.F) {
 	f.Fuzz(func(t *testing.T, input string) {
 		_ = core.Lex(input, SqlparseRules)
 	})
+}
+
+func TestSqlparseTestcases(t *testing.T) {
+	testcases := loadParsedTestcases(t, "test_files/parsed-sqlparse-testcases.txt")
+	for _, testcase := range testcases {
+		t.Run(testcase.query, func(t *testing.T) {
+			tokens := core.Lex(testcase.query, SqlparseRules)
+			require.Equal(t, len(testcase.expectedTokens), len(tokens))
+
+			for i, expectedToken := range testcase.expectedTokens {
+				assert.Equal(t, expectedToken.tokenType, tokens[i].Type.Name)
+				assert.Equal(t, expectedToken.tokenValue, tokens[i].RawValue)
+			}
+		})
+	}
+}
+
+type parsedTestcase struct {
+	query          string
+	expectedTokens []expectedToken
+}
+
+type expectedToken struct {
+	tokenType  string
+	tokenValue string
+}
+
+func loadParsedTestcases(t *testing.T, filename string) []parsedTestcase {
+	contents, err := os.ReadFile(filename)
+	assert.NoError(t, err)
+
+	testcases := bytes.Split(contents, []byte("\n<end_of_tokens/>\n"))
+	testcases = testcases[:len(testcases)-1]
+
+	var parsedTestcases []parsedTestcase
+	for _, testcase := range testcases {
+		endOfQuerySplit := bytes.Split(testcase, []byte("\n<end_of_query/>\n"))
+		assert.Equal(t, 2, len(endOfQuerySplit))
+
+		query := string(endOfQuerySplit[0])
+
+		tokens := bytes.Split(endOfQuerySplit[1], []byte("\n<end_of_token/>\n"))
+		tokens = tokens[:len(tokens)-1]
+
+		var expectedTokens []expectedToken
+		for _, tokenDescription := range tokens {
+			tokenDescriptionSplit := bytes.SplitN(tokenDescription, []byte("\n"), 2)
+			tokenType := string(tokenDescriptionSplit[0])
+			tokenValue := string(tokenDescriptionSplit[1])
+			expectedTokens = append(expectedTokens, expectedToken{tokenType, tokenValue})
+		}
+
+		parsedTestcases = append(parsedTestcases, parsedTestcase{query, expectedTokens})
+	}
+	return parsedTestcases
 }
