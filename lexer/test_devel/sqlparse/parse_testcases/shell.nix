@@ -5,18 +5,6 @@ in
 
 pkgs.mkShellNoCC {
   packages = [
-    (pkgs.python3.withPackages(python-pkgs: [
-      (python-pkgs.sqlparse.overrideAttrs (oldAttrs: {
-          version = "0-unstable-2024-02-17";
-          src = pkgs.fetchFromGitHub {
-            owner = "andialbrecht";
-            repo = "sqlparse";
-            rev = "38c065b86ac43f76ffd319747e57096ed78bfa63";
-            hash = "sha256-YrzxL/uB8nOwU06qXesXEX93Y47R65PZx1xJ9EbhnGo=";
-          };
-          doCheck = false;
-          doInstallCheck = false;
-      }))
-    ]))
+    (pkgs.python3.withPackages(python-pkgs: [ python-pkgs.sqlparse ]))
   ];
 }
