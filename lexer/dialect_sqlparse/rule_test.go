@@ -87,7 +87,7 @@ func FuzzLex(f *testing.F) {
 
 		// Basic checks:
 
-		totalLength := 0
+		reconstructedInput := ""
 		for _, token := range tokens {
 			// Position should never be negative
 			if token.Position < 0 {
@@ -104,11 +104,11 @@ func FuzzLex(f *testing.F) {
 				t.Errorf("Token position %d exceeds input length %d", token.Position, len(input))
 			}
 
-			totalLength += len(token.RawValue)
+			reconstructedInput += token.RawValue
 		}
 
 		// Tokens should cover the entire input
-		assert.Equal(t, len(input), totalLength)
+		assert.Equal(t, input, reconstructedInput)
 	})
 }
 

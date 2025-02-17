@@ -8,6 +8,7 @@ import "lexer/core"
 // TODO: should we declare that Nodes are immutable?
 type Node interface {
 	String() string
+	Children() []Node
 }
 
 type NodeListNode struct {
@@ -26,12 +27,20 @@ func (n NodeListNode) String() string {
 	return result
 }
 
+func (n NodeListNode) Children() []Node {
+	return n.Nodes
+}
+
 type TokenNode struct {
 	Token core.Token
 }
 
 func (n TokenNode) String() string {
 	return "TokenNode[" + n.Token.String() + "]"
+}
+
+func (n TokenNode) Children() []Node {
+	return []Node{}
 }
 
 func TokensToNode(tokens []core.Token) Node {
@@ -42,4 +51,30 @@ func TokensToNode(tokens []core.Token) Node {
 	}
 
 	return NodeListNode{Nodes: nodes}
+}
+
+type PipeNode struct {
+	BeforePipe Node
+	Pipes      []Node
+}
+
+func (n PipeNode) String() string {
+	result := "PipeNode[\n"
+	result += "BeforePipe: " + n.BeforePipe.String() + ",\n"
+	result += "Pipes: ["
+	for i, pipe := range n.Pipes {
+		if i > 0 {
+			result += ", "
+		}
+		result += pipe.String()
+	}
+	result += "]\n"
+	result += "]"
+	return result
+}
+
+func (n PipeNode) Children() []Node {
+	children := []Node{n.BeforePipe}
+	children = append(children, n.Pipes...)
+	return children
 }

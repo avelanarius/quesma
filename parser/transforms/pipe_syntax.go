@@ -5,26 +5,6 @@ package transforms
 
 import "parser/core"
 
-type PipeNode struct {
-	BeforePipe core.Node
-	Pipes      []core.Node
-}
-
-func (n PipeNode) String() string {
-	result := "PipeNode[\n"
-	result += "BeforePipe: " + n.BeforePipe.String() + ",\n"
-	result += "Pipes: ["
-	for i, pipe := range n.Pipes {
-		if i > 0 {
-			result += ", "
-		}
-		result += pipe.String()
-	}
-	result += "]\n"
-	result += "]"
-	return result
-}
-
 func TransformPipeSyntax(node core.Node) core.Node {
 	nodeList, ok := node.(*core.NodeListNode)
 	if !ok {
@@ -73,7 +53,7 @@ func TransformPipeSyntax(node core.Node) core.Node {
 		return node
 	}
 
-	return &PipeNode{
+	return &core.PipeNode{
 		BeforePipe: core.NodeListNode{Nodes: beforePipe},
 		Pipes:      pipes,
 	}

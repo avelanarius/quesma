@@ -60,7 +60,7 @@ func FuzzLex(f *testing.F) {
 
 		// Basic checks:
 
-		totalLength := 0
+		reconstructedInput := ""
 		seenError := false
 
 		for _, token := range tokens {
@@ -83,12 +83,12 @@ func FuzzLex(f *testing.F) {
 				seenError = true
 			}
 
-			totalLength += len(token.RawValue)
+			reconstructedInput += token.RawValue
 		}
 
 		if !seenError {
 			// Tokens should cover the entire input
-			assert.Equal(t, len(input), totalLength)
+			assert.Equal(t, input, reconstructedInput)
 		}
 	})
 }
