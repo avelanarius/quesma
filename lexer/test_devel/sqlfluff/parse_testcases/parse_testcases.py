@@ -33,7 +33,7 @@ def run(dialect, input, output):
 
         output.write("\n<end_of_tokens/>\n")
 
-    print(input, ": processed", len(queries), "queries; ", error_count, "lex errors")
+    print(input, ": processed", len(queries), "queries;", error_count, "lex errors")
 
     output.close()
 
