@@ -33,8 +33,7 @@ jobs:
         run: |
           go mod tidy
           go mod download all
-          go list -m -json all | jq 'select(.Path != "quesma_v2")' | go-licence-detector -includeIndirect -noticeTemplate=../.github/notice-detector/templates/NOTICE.MD.tmpl -noticeOut=../NOTICE.MD -overrides=../.github/notice-detector/overrides.ndjson -rules=../.github/notice-detector/rules.json
-          rm dependencies.asciidoc
+          go list -m -json all | jq 'select(.Path != "quesma_v2")' | go-licence-detector -includeIndirect -noticeTemplate=../.github/notice-generator/go-licence-detector/NOTICE.MD.tmpl -noticeOut=../NOTICE.MD -overrides=../.github/notice-generator/go-licence-detector/overrides.ndjson -rules=../.github/notice-generator/go-licence-detector/rules.json
 
       - name: Print NOTICE.MD
         run: cat NOTICE.MD
