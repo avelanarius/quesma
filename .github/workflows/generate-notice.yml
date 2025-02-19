@@ -31,6 +31,7 @@ jobs:
       - name: Generate NOTICE.MD
         run: |
           .github/notice-generator/collect-go-dependencies.sh | sort | uniq | go-licence-detector -includeIndirect -noticeTemplate=.github/notice-generator/go-licence-detector/NOTICE.MD.tmpl -noticeOut=NOTICE.MD -overrides=.github/notice-generator/go-licence-detector/overrides.ndjson -rules=.github/notice-generator/go-licence-detector/rules.json
+          .github/notice-generator/collect-manual-notices.sh >> NOTICE.MD
 
       - name: Print NOTICE.MD
         run: cat NOTICE.MD
